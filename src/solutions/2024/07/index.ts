@@ -1,4 +1,5 @@
 import { PuzzleSolution } from '../../../runner/solution'
+import { range } from '../../../utils/collections/array'
 import { convertToBase10, EOL, WHITESPACE } from '../../../utils/parsers'
 import { add } from '../../../utils/reducers'
 
@@ -31,6 +32,14 @@ const calc = (operands: Array<number>, operators: Array<string>) => {
 }
 
 const solve = (input: string, operators: Array<string>) => {
+  const combos = range(1, 12).reduce(
+    (acc, i) => {
+      acc[i] = combinations(operators, i)
+      return acc
+    },
+    {} as Record<string, Array<Array<string>>>,
+  )
+
   return input
     .split(EOL)
     .map((line) => line.split(': '))
@@ -39,7 +48,7 @@ const solve = (input: string, operators: Array<string>) => {
       parts: parts.split(WHITESPACE).map(convertToBase10),
     }))
     .filter(({ answer, parts }) => {
-      return combinations(operators, parts.length - 1).some((ops) => {
+      return combos[parts.length - 1].some((ops) => {
         return calc(parts, ops) === answer
       })
     })
